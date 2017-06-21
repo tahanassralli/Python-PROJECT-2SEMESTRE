@@ -1,0 +1,11 @@
+<h1>Add Vm</h1>
+{% load url from future %}
+<form action="{% url 'create-vm' %}" method="POST">
+  {% csrf_token %}
+  <ul>
+    {{ form.as_ul }}
+  </ul>
+  <input id="save_Vm" type="submit" value="Create" />
+</form>
+
+<a href="{% url "Vms-list" %}">back to list</a>

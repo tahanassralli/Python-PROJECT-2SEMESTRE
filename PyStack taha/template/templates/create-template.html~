@@ -1,0 +1,23 @@
+
+{% load url from future %}
+
+<form action="/createTemplateLogic" method="POST">
+  {% csrf_token %}
+  <ul>
+    	<label for="tmp_name">Template Name : </label>
+	<input type="text" id="tmp_name" name="tmp_name"/><br/>
+	
+	<label for="tmp_desc">Describe your template : </label>
+	<input type="text" " id="tmp_desc" name="tmp_desc"/><br/>
+	Choose Your Template:
+	 <select name="templateid" id="templateid" size="3">
+	  <option value="22cff7e4-af82-408f-a400-221b5fb4ae2a" >CentOSserver</option>
+	  <option value="26dcfbfe-bad9-4bce-924d-9898bb54a5c8" >Ubuntuserver</option>
+	  <option value="62a3d073-c843-48fb-a06a-94c5ae6c9987" >Debian Server</option>
+	</select><br/>
+  </ul>
+  <input id="save_Vm" type="submit" value="Create" />
+</form>
+
+<a href="{% url "all-vms" %}">back to Servers</a><br/>
+<a href="{% url "all-templates" %}">back to Templates</a>

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+	{% if role == "admin" %}
+
+	<nav class="navbar navbar-default" role="navigation">
+		    <div class="navbar-header">
+			<a class="navbar-brand" href="/allVms">ADMIN : {{username}}</a>
+		    </div>
+		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+			    <li><a href="/FormCreateVm">Create New VM</a></li>
+			    <li class="dropdown">
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Firewall <span class="caret"></span></a>
+		  <ul class="dropdown-menu" role="menu">
+		    <li><a href="#">create Port Firewall Rule</a></li>
+		    <li><a href="#">list All Firewall Rules</a></li>
+		  </ul>
+		</li>
+			    <li><a href="/users">Users</a></li>
+			    <li><a href="/log">Log</a></li>
+			</ul>
+			<div class="col-sm-3 col-md-3 pull-right">
+			    {% load url from future %}
+			    <form action="/logout/" method="POST">
+			    {% csrf_token %}
+				<div class="input-group">
+				  <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+				</div>
+			    </form>
+			</div>        
+		    </div>
+		</nav>
+	<div class="container">
+	    <div class="row">
+		{% if users.count > 0 %}
+			{% for user in users%}
+							
+			<div class="col-lg-4">
+			    <div class="form_hover" style="background-color: #428BCA;">
+				{% if user.sexe == "male" %}
+				<p style="text-align: center; margin-top: 20px;">
+				    <img src="{% static "assets/images/user-icon.png"%}"  class="fa fa-user" style="font-size: 147px;width:200px; height:200px;"></i>
+				</p>
+				{% else %}
+				<p style="text-align: center; margin-top: 20px;">
+				    <img src="{% static "assets/images/female_pns3.png"%}"  class="fa fa-user" style="font-size: 147px;width:200px; height:200px;"></i>
+				</p>
+				{% endif %}
+				<div class="header">
+				    <div class="blur"></div>
+				    <div class="header-text">
+					<div class="panel panel-success" style="height: 247px;">
+					    <div class="panel-heading">
+					        <h3 style="color: #428BCA;">{{user.username}} Details</h3>
+					    </div>
+					    <div class="panel-body">
+					        <div class="form-group">
+					            Name : <b>{{user.username}}</b>
+					        </div>
+						<div class="form-group">
+					            Role : <b>{{user.role}}</b>
+					        </div>
+					    </div>
+					</div>
+				    </div>
+				</div>
+			    </div>
+			</div>
+			{% endfor %}
+		{% else %}
+			<p> No Users to display </p>
+		{% endif %}
+
+	    </div>
+	</div>
+	{% else %}
+	{% block sidebar %}{% endblock %}
+	you have to login <a href="/login">login</a>.<br/>If you are new , then you must create an account from <a href="/createAccount">here</a>
+		
+	{% endif %}
+{% endblock %}

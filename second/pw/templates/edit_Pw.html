@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static "assets/css/login2.css"%}">
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>CodePen - Calm breeze login screen</title>
+
+    <link rel="stylesheet" href="{% static "assets/css/style.css"%}">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+	
+		<h1>Create Port forwarding rule</h1>
+					{% load url from future %}
+					<form class="form-signin" action="/createPw/" method="POST">
+							{% csrf_token %}
+							<input type='hidden' name='csrfmiddlewaretoken' value='randomchars' />
+						<input type="text" class="form-control" name="ipaddressid" id="ipaddressid" placeholder="ipaddressid" required autofocus>
+						<input type="text" class="form-control" name="privateport" id="privateport" placeholder="privateport" required autofocus>
+						<input type="text" class="form-control" name="protocol" id="protocol" placeholder="protocol" required autofocus>
+						<input type="text" class="form-control" name="publicport" id="publicport" placeholder="publicport" required autofocus>
+						<input type="text" class="form-control" name="virtualmachineid" id="virtualmachineid" placeholder="virtualmachineid" required autofocus>
+						
+						
+						<button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-left:550px ">Create</button>
+					</form>
+				</div>
+			
+
+	<ul class="bg-bubbles">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+</div>
+
+  <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+
+  <script src="{% static "assets/js/index.js"%}"></script>
+
+</body>
+
+</html>

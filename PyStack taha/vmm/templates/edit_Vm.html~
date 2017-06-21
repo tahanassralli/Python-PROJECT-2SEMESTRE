@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+	{% if role == "admin" %}	
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		<a class="navbar-brand" href="/allVms">ADMIN : {{username}}</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<ul class="nav navbar-nav">
+		    <li><a href="/FormCreateVm">Create New VM</a></li>
+		    <li class="dropdown">
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Firewall <span class="caret"></span></a>
+		  <ul class="dropdown-menu" role="menu">
+		    <li><a href="#">create Port Firewall Rule</a></li>
+		    <li><a href="#">list All Firewall Rules</a></li>
+		  </ul>
+		</li>
+		    <li><a href="/users">Users</a></li>
+		    <li><a href="/log">Log</a></li>
+		</ul>
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+			<div class="input-group">
+			  <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+			</div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-6 col-md-4 col-md-offset-4">
+				<h1 class="text-center login-title">Create New Virtual Machine</h1>
+			
+				<div class="account-wall">
+					{% load url from future %}
+					<form class="form-signin" action="/createVM/" method="POST">
+						{% csrf_token %}
+						<input type="text" class="form-control" name="name" id="name" placeholder="Name" required autofocus><br/>Choose Your Template:<br/>
+						<select class="selectpicker form-control" name="templateid" id="templateid">
+						    <option value="22cff7e4-af82-408f-a400-221b5fb4ae2a" >CentOSserver</option>
+						    <option value="26dcfbfe-bad9-4bce-924d-9898bb54a5c8" >Ubuntuserver</option>
+				 		    <option value="62a3d073-c843-48fb-a06a-94c5ae6c9987" >Debian Server</option>
+						 </select><br/>
+						<button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+					</form>
+				</div>
+				<a href="" align="center">back to list</a>
+			</div>
+		</div>
+	</div>
+	{% else %}
+	{% block sidebar %}{% endblock %}
+	you have to login <a href="/login">login</a>.<br/>If you are new , then you must create an account from <a href="/createAccount">here</a>
+		
+	{% endif %}
+
+{% endblock %}

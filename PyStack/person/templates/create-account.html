@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static "assets/css/login2.css"%}">
+	<!--<link rel="stylesheet" type="text/css" href="{% static "assets/css/bootstrap.css"%}">-->
+<body>
+	<div class="wrapper">
+	<div class="container">
+	
+	
+				<form class="form-signin" action="{% url "createAccountLogic" %}" method="POST">
+				{% csrf_token %}
+				<input type="text" class="form-control" name="username" id="username" placeholder="Username" required autofocus>
+				<input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+				<input type="password" class="form-control" name="Vpassword" id="Vpassword" placeholder="Retype Password" required>
+				
+				<button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+				</br>
+				</br>
+				<a href="/login" class="text-center new-account">No Need i have one </a>
+				</form>
+				</div>
+
+
+	<ul class="bg-bubbles">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+</div>
+
+
+  <script src='http://codepen.io/assets/libs/fullpage/jquery.js'></script>
+
+  <script href="{% static "assets/js/index.js"%}"></script>
+<body>
+</html>

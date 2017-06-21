@@ -1,0 +1,18 @@
+body{ text-align:center;}
+		#page{
+			width:968px;
+			text-align:left;
+			margin:10px auto 20px auto;
+			background-color:grey;
+		}
+		#sidebar{
+			float:left;
+			width:280px;
+			border:1px solid red;
+		}
+		#content{
+			float:left;
+			width:608px;
+			border:1px solid red;
+			padding:18px;
+		}

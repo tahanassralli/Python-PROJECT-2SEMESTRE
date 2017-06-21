@@ -1,0 +1,86 @@
+{% extends "base2.html" %}
+{% load staticfiles %}
+{% block content %}
+	{% if role == "admin" %}	    
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		<a class="navbar-brand" href="/allVms">welcome {{username}}</a>
+		<a  class="navbar-brand" href="/FormCreateVm">Create New VM</a>
+		<a  class="navbar-brand" href="/FormCreateFw">Create firewall rule</a>
+		<a  class="navbar-brand" href="/FormCreatePw">Create portforwarding rule</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+		        <div class="input-group">
+		          <button class="btn btn:hover" type="submit">Logout</button>
+		        </div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Virtual Machine : {{vm.name}}</h1>
+				</div>
+				<div class="col-lg-4 col-md-5 col-xs-7 thumb" >
+					<p><b>Name : </b><span>{{vm.name}}</span></p>
+					{% if vm.state == "Running" %}
+					<p><b>State : </b><span style="color:green;">Running</span></p>
+					{% elif vm.state == "Stopped" %}
+					<p><b>State : </b><span style="color:red;">Stopped</span></p>
+					{% endif %}
+					<p><b>VM Id : </b><span>{{vm.vmid}}</span></p>
+					<p><b>serviceoffering : </b><span>{{vm.serviceoffering}}</span></p>
+					<p><b>Template Id : </b><span>{{vm.templateid}}</span></p>
+					<p><b>Zone Id : </b><span>{{vm.zoneid}}</span></p>
+					<p><b>Network Id : </b><span>{{vm.networkids}}</span></p>
+					
+				</div>
+				<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+					
+				</div>
+				<div class="col-lg-3 col-md-4 col-xs-6 thumb" >
+					  
+						  
+							
+							   <h2> <a href="/startVm/{{vm.id}}/">Start VM</a></h2>
+							
+						  
+						    
+							
+							   <h2> <a href="/restartVM/{{vm.id}}/">Restart VM</a></h2>
+						
+						   
+						   
+							
+							  <h2>  <a href="/stopVM/{{vm.id}}/">Stop VM</a></h2>
+							
+					
+							
+							   <h2> <a href="/restoreVM/{{vm.id}}/">Restore VM</a></h2>
+							
+					
+							   <h2> <a href="/destroyvm/{{vm.id}}/">Destroy VM</a></h2>
+							</div>
+						    </li>
+						</ul>
+						
+					    </div>
+					
+				</div>
+			</div>
+			<hr>
+		</div>
+	</div>
+	{% else %}
+	{% block sidebar %}{% endblock %}
+	you have to login <a href="/login">login</a>.<br/>If you are new , then you must create an account from <a href="/createAccount">here</a>
+	
+	{% endif %}
+{% endblock %}

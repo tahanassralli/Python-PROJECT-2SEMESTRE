@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% load staticfiles %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Thumbnail Gallery - Start Bootstrap Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static "assets/css/bootstrap.min.css"%}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/users.css"%}">
+    <link rel="stylesheet" type="text/css" href="http://www.shieldui.com/shared/components/latest/css/shieldui-all.min.css" />
+    <link rel="stylesheet" type="text/css" href="http://www.shieldui.com/shared/components/latest/css/light-bootstrap/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/log.css"%}">
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/vms.css"%}">
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/login.css"%}">
+    <link rel="stylesheet" type="text/css" href="{% static "assets/css/bootstrap.css"%}">
+
+    <!-- you need to include the shieldui css and js assets in order for the charts to work -->
+    
+    <script type="text/javascript" src="http://www.shieldui.com/shared/components/latest/js/shieldui-all.min.js"></script>
+    <script type="text/javascript" src="{% static "assets/js/log.js"%}"></script>
+
+    <!-- Custom CSS -->
+    <link href="{% static "assets/css/thumbnail-gallery.css"%}" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+
+	{% block content %}{% endblock %}
+	<!-- jQuery -->
+	<script src="{% static "assets/js/jquery.js"%}"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="{% static "assets/js/bootstrap.min.js"%}"></script>
+	<!-- Footer -->
+	<footer>
+	    <div class="row">
+		<div class="col-lg-12" style ="text-align: center;">
+		    <p>Copyright &copy;, PyStack Made In ESPRIT-ARCTIC2 2015</p>
+		</div>
+	    </div>
+	</footer>
+</body>
+</html>

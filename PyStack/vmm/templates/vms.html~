@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+	{% if role == "admin" %}	    
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		
+		<a class="navbar-brand" href="/allVms">ADMIN : {{username}}</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<ul class="nav navbar-nav">
+		    <li><a href="/FormCreateVm">Create New VM</a></li>
+		    <li class="dropdown">
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Firewall <span class="caret"></span></a>
+		  <ul class="dropdown-menu" role="menu">
+		    <li><a href="#">create Port Firewall Rule</a></li>
+		    <li><a href="#">list All Firewall Rules</a></li>
+		  </ul>
+		</li>
+		    <li><a href="/users">Users</a></li>
+		    <li><a href="/log">Log</a></li>
+		</ul>
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+		        <div class="input-group">
+		          <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+		        </div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+	
+			<div class="col-lg-12">
+				<h1 class="page-header">All Virtual Machines</h1>
+			</div>
+			{% if vms.count > 0 %}
+				{% for vm in vms%}
+					{% if vm.image == "assets/images/centos.png" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<a class="thumbnail" href="/vm/{{vm.id}}/">
+							 <img  class="img-responsive" style="height:200px; width:200px"  src="{% static "assets/images/centos.png"%}" alt=""><br/>
+							</a>
+						</div>
+					{% endif %}
+					{% if vm.image == "assets/images/ubuntu.png" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<a class="thumbnail" href="/vm/{{vm.id}}/" >
+							 <img  class="img-responsive" style="height:200px; width:200px" src="{% static "assets/images/ubuntu.png"%}" alt=""><br/>
+							</a>
+						</div>
+					{% endif %}
+					{% if vm.image == "assets/images/debian.jpg" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<a class="thumbnail" href="/vm/{{vm.id}}/">
+							 <img class="img-responsive" style="height:200px; width:200px" src="{% static "assets/images/debian.jpg"%}" alt=""><br/>
+							</a>
+						</div>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+			<p> No VMs to display </p>
+			{% endif %}
+		</div>
+	
+	{% elif role == "simpleuser" %}
+	
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		<a class="navbar-brand">USER : {{username}}</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<ul class="nav navbar-nav">
+		    <li><a href="/FormCreateVm">Create New Template</a></li>
+		</ul>
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+		        <div class="input-group">
+		          <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+		        </div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+	<div class="container">
+		<div class="row">
+	
+			<div class="col-lg-12">
+				<h1 class="page-header">All Servers</h1>
+			</div>
+			{% if vms.count > 0 %}
+				{% for vm in vms%}
+					{% if vm.image == "assets/images/centos.png" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<a class="thumbnail" href="/vm/{{vm.id}}/">
+							 <img  class="img-responsive"  src="{% static "assets/images/centos.png"%}" alt="">
+								<p>name = {{vm.name}}</p>
+							</a>
+						</div>
+					{% endif %}
+					{% if vm.image == "assets/images/ubuntu.png" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<a class="thumbnail" href="/vm/{{vm.id}}/" height="480" width="480">
+							 <img  class="img-responsive" src="{% static "assets/images/ubuntu.png"%}" alt="">
+								<p>name = {{vm.name}}</p>
+							</a>
+						</div>
+					{% endif %}
+					{% if vm.image == "assets/images/debian.jpg" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<a class="thumbnail" href="/vm/{{vm.id}}/">
+							 <img class="img-responsive"  src="{% static "assets/images/debian.jpg"%}" alt="">
+								<p>name = {{vm.name}}</p>
+							</a>
+						</div>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+			<p> No Servers to display </p>
+			{% endif %}
+		</div>
+		<hr>
+		{% else %}
+		{% block sidebar %}{% endblock %}
+		you have to login <a href="/login">login</a>.<br/>If you are new , then you must create an account from <a href="/createAccount">here</a>
+		
+		{% endif %}
+	</div>
+
+{% endblock %}
+

@@ -1,0 +1,348 @@
+import CloudStack
+from django.shortcuts import render_to_response
+from sys import argv
+import datetime
+import sqlite3
+from django.http import HttpResponse,HttpResponseRedirect
+from vmm.models import Vm
+
+
+
+def createPortFirewallRule(privateport,publicport,virtualmachineid,openfirewall):
+	job = cloudstack.createPortForwardingRule({'ipaddressid':'8fd5d993-7060-4303-93c7-bc4c6c118644','privateport':privateport,'protocol':'tcp',
+        'publicport':publicport,'virtualmachineid':virtualmachineid,'openfirewall': openfirewall})
+	
+
+def creationTemplate(displaytext,name,ostypeid,volumeid):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()	
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client	
+	
+	cloudstack.createTemplate({
+	'displaytext':displaytext ,
+	'name':name,
+	'ostypeid':ostypeid,
+	'bits':'64',
+	'isfeatured':'true',
+	'ispublic':'true',
+	'volumeid':volumeid
+	})
+
+
+def startVM(request,id):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()	
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client
+	c.execute("SELECT vmid FROM vmm_vm where id ="+id+";");
+	vmid, = c.fetchone()
+        vm = cloudstack.startVirtualMachine({'id':vmid})
+	c.execute("UPDATE vmm_vm SET state='Running' WHERE Id='"+id+"';")
+	
+	now = datetime.datetime.now()
+	now=str(now)
+	
+	c.execute("INSERT INTO log_event (id,username,role,description,date,type,vmname) VALUES (NULL,'"+
+	request.session["username"]+"','"+request.session["role"]+"','started the machine :','"+now+"','VM.START','"++"');")
+
+	conn.commit()
+	conn.close()	
+	return render_to_response('vm.html',{'vm':Vm.objects.get(id=id),'role':request.session["role"],'username':request.session["username"]})
+
+def restartVM(request,id):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()	
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client
+	c.execute("SELECT vmid FROM vmm_vm where id ="+id+";");
+	conn.commit()
+	vmid, = c.fetchone()	
+	vm = cloudstack.rebootVirtualMachine({'id':vmid})
+	conn.close()
+	return render_to_response('vm.html',{'vm':Vm.objects.get(id=id),'role':request.session["role"],'username':request.session["username"]})
+
+
+def stopVM(request,id):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()	
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client
+	c.execute("SELECT vmid FROM vmm_vm where id ="+id+";");
+	conn.commit()
+	vmid, = c.fetchone()	
+        vm = cloudstack.stopVirtualMachine({'id':vmid})
+	c.execute("UPDATE vmm_vm SET state='Stopped' WHERE Id='"+id+"';")
+	conn.commit()
+	conn.close()	
+	return render_to_response('vm.html',{'vm':Vm.objects.get(id=id),'role':request.session["role"],'username':request.session["username"]})
+
+
+def destroyVM(request,id):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()	
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client
+	c.execute("SELECT vmid FROM vmm_vm where id ="+id+";");
+	conn.commit()
+	vmid = c.fetchone()[0]
+	vm = cloudstack.destroyVirtualMachine({'id':vmid})
+	c.execute("DELETE FROM vmm_vm WHERE id = '"+id+"';")
+	conn.commit()
+	conn.close()
+	return  HttpResponseRedirect("/allVms")
+
+def listAllVMs(request):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client	
+	c.execute("DELETE FROM vmm_vm ;")
+	conn.commit()
+	vms = cloudstack.listVirtualMachines()
+	
+	for vm in vms:
+		if vm['templateid'] == "22cff7e4-af82-408f-a400-221b5fb4ae2a":
+			c.execute("INSERT INTO vmm_vm (name,vmid,serviceoffering,templateid,zoneid,networkids,volumeid,state,image) VALUES ('"
+			+vm['displayname']+ "','"+vm['id']+"','98d17394-e6cf-4f9d-b84f-82b3855ea78b','"
+			+vm['templateid']+"','95cddc7f-bc1b-4014-a7b4-585dcd684e01','87e115e8-3849-4961-824c-0c8cb8e86c76','0','"+vm['state']+"','assets/images/centos.png')")
+			conn.commit()
+		elif vm['templateid'] == "26dcfbfe-bad9-4bce-924d-9898bb54a5c8":
+			c.execute("INSERT INTO vmm_vm (name,vmid,serviceoffering,templateid,zoneid,networkids,volumeid,state,image) VALUES ('"
+			+vm['displayname']+ "','"+vm['id']+"','98d17394-e6cf-4f9d-b84f-82b3855ea78b','"
+			+vm['templateid']+"','95cddc7f-bc1b-4014-a7b4-585dcd684e01','87e115e8-3849-4961-824c-0c8cb8e86c76','0','"+vm['state']+"','assets/images/ubuntu.png')")
+			conn.commit()
+		elif vm['templateid'] == "62a3d073-c843-48fb-a06a-94c5ae6c9987":
+			c.execute("INSERT INTO vmm_vm (name,vmid,serviceoffering,templateid,zoneid,networkids,volumeid,state,image) VALUES ('"
+			+vm['displayname']+ "','"+vm['id']+"','98d17394-e6cf-4f9d-b84f-82b3855ea78b','"
+			+vm['templateid']+"','95cddc7f-bc1b-4014-a7b4-585dcd684e01','87e115e8-3849-4961-824c-0c8cb8e86c76','0','"+vm['state']+"','assets/images/debian.jpg')")
+			conn.commit()
+	
+	return render_to_response('vms.html',{'vms':Vm.objects.all(),'role':request.session["role"],'username':request.session["username"]})
+
+def listAllFirewallRules():
+	rules  = cloudstack.listFirewallRules()
+	for rule in rules:
+		print "rule made on port : %s"% (rule['endport'])
+
+def restoreVM(VMid):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()	
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client
+	c.execute("SELECT vmid FROM vmm_vm where id ="+id+";");
+	conn.commit()
+	vmid = c.fetchone()[0]
+        vm = cloudstack.restoreVirtualMachine({'id':VMid})
+	conn.close()
+	return render_to_response('vm.html',{'vm':Vm.objects.get(id=id),'role':request.session["role"],'username':request.session["username"]})
+
+def createVM(request):
+	conn = sqlite3.connect('testDB')
+	c = conn.cursor()
+	api = 'http://196.203.216.18:5555/client/api'
+	apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+	secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+	cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client
+	
+	vm = cloudstack.deployVirtualMachine(
+	{
+	'serviceofferingid':'98d17394-e6cf-4f9d-b84f-82b3855ea78b',
+	'templateid':request.POST['templateid'],
+	'zoneid' : '95cddc7f-bc1b-4014-a7b4-585dcd684e01',
+	'networkids' :'87e115e8-3849-4961-824c-0c8cb8e86c76',
+	'displayname':request.POST['name'],
+	})
+	if request.POST['templateid'] == "22cff7e4-af82-408f-a400-221b5fb4ae2a":
+		c.execute("INSERT INTO vmm_vm (name,vmid,serviceoffering,templateid,zoneid,networkids,volumeid,image) VALUES ('"
+		+request.POST['name']+ "','"+vm['id']+"','98d17394-e6cf-4f9d-b84f-82b3855ea78b','"
+		+request.POST['templateid']+"','95cddc7f-bc1b-4014-a7b4-585dcd684e01','87e115e8-3849-4961-824c-0c8cb8e86c76','0','assets/images/centos.png');")
+	if request.POST['templateid'] == "26dcfbfe-bad9-4bce-924d-9898bb54a5c8":
+		c.execute("INSERT INTO vmm_vm (name,vmid,serviceoffering,templateid,zoneid,networkids,volumeid,image) VALUES ('"
+		+request.POST['name']+ "','"+vm['id']+"','98d17394-e6cf-4f9d-b84f-82b3855ea78b','"
+		+request.POST['templateid']+"','95cddc7f-bc1b-4014-a7b4-585dcd684e01','87e115e8-3849-4961-824c-0c8cb8e86c76','0','assets/images/ubuntu.png');")
+	if request.POST['templateid'] == "62a3d073-c843-48fb-a06a-94c5ae6c9987":
+		c.execute("INSERT INTO vmm_vm (name,vmid,serviceoffering,templateid,zoneid,networkids,volumeid,image) VALUES ('"
+		+request.POST['name']+ "','"+vm['id']+"','98d17394-e6cf-4f9d-b84f-82b3855ea78b','"
+		+request.POST['templateid']+"','95cddc7f-bc1b-4014-a7b4-585dcd684e01','87e115e8-3849-4961-824c-0c8cb8e86c76','0','assets/images/debian.jpg');")
+	
+	conn.commit()
+
+	conn.close()
+	return render_to_response('vms.html',{'vms':Vm.objects.all(),'role':request.session["role"],'username':request.session["username"]})
+
+
+
+
+
+
+
+'''
+filename = "/home/esprit/Desktop/Cloudstack/cloudstack-python-client-master/CloudStack/log.txt"
+
+IsConnect = raw_input("##########################################################\n		Do you want to connect ? (Y/N) >> ")
+
+while 1:
+	if IsConnect == "y":
+		print "##########################################################"
+		api = 'http://196.203.216.18:5555/client/api'
+		apikey = '3U7UPLR4JHYEzOhKe0JYnR_ICChdmuynnl0SdqmFzFgG4Hgd6BJHHjcSk2K3SsXUvheLEoN-SlRuEOpqZbqbVA'
+		secret = 'JU1gQk99VpAEZWWKxiR97w8mIPtSZsXwuORL6H2NKkve0EHDvBZ5IQN-CXHqMhVKmOLRcRhjyr4RPnTqAmD5Ig'
+		cloudstack = CloudStack.Client(api, apikey, secret) # ouvrir une connexion serveur/client		
+
+				
+		choice = "0"
+		Goodchoice = "0"
+		action= raw_input("		Choose actions for managing VM\n		1 - Start VM\n		2 - Restart VM\n		3 - Stop VM\n		4 - Destroy VM\n		5 - Display All VMs\n		6- Create new VM\n		7-List Of Firewall Rules Port\n		8-Create template\n		9-Create Port Rule Firewall\n		>>")
+		print  "##########################################################"
+		nameVM = "1"
+		
+		if action == "9" or action =="8" or action =="7" or action =="6" or action =="5":
+			choice = action
+		if action == "1":
+			Goodchoice = "1"
+		if action == "2":
+			Goodchoice = "2"
+		if action == "3":
+			Goodchoice = "3"	
+		if action == "4":
+			Goodchoice = "4"
+
+		if Goodchoice == action :	
+			vms = cloudstack.listVirtualMachines()
+			i=0
+			print "		choose your available VM\n"
+		
+	    		for vm in vms:
+				print "			--------------------"
+				print "			Name Of VM: %s\n" % (vm['name'])
+			print "			--------------------"
+		
+			
+			while i==0 and nameVM !="0": 
+					nameVM = raw_input ("		Enter the name correctly or 0 to return to menu >> ")
+					if nameVM !="0":
+						for vm in vms:
+							if nameVM == vm['name']:
+								chosenVM = vm
+								i=1
+						if i==0: 
+							print "		invalid name"
+			
+						
+		
+				
+		if nameVM !="0" or action =="5" or action != "6" or action != "7":
+			if action == "1":
+				print '		Starting The VM'
+				startVM(chosenVM['id'])
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)
+				target.write("Description :"+chosenVM['name']+" started at "+now+"\n")
+				target.close()
+			elif action == "2":
+				print '		Restarting The VM'
+				restartVM(chosenVM['id'])
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)
+				target.write("Description :"+chosenVM['name']+" restarted at "+now+"\n")
+				target.close()
+			elif action == "3":
+				print '		Stoping The VM'
+				stopVM(chosenVM['id'])
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)
+				target.write("\nDescription :"+chosenVM['name']+" stoped at "+now)
+				target.close()
+			elif action == "9":
+				privateport = raw_input(" enter private port :" )
+				publicport = raw_input(" enter public port :")
+				IsTrue = raw_input(" do you want firewall : (Y/N)")
+				if IsTrue == 'y':
+					openfirewall='true'
+				elif IsTrue == 'n':
+					openfirewall='false'
+				virtualmachineid = chosenVM['id']
+				createPortFirewallRule(privateport,publicport,virtualmachineid,openfirewall)
+				stopVM(chosenVM['id'])
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)
+				target.write("\nDescription :"+chosenVM['name']+" stoped at "+now)
+				target.close()
+			elif action == "4":
+				print '		Destroying The VM'
+				destroyVM(chosenVM['id'])
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)
+				target.write("Description :"+chosenVM['name']+" destroyed at "+now+"\n")
+				target.close()
+			elif action == "7":
+				listAllFirewallRules()
+			elif action == "8":
+			 	displaytext = raw_input ("display text : ")
+				name = raw_input ("name of template : ")
+				ostypeid = 'a01b94c6-a166-11e4-b2ef-005056847688'
+				volumeid = '7c411160-3068-48b3-9d55-70f19ef2e1e7'
+				creationTemplate(displaytext,name,ostypeid,volumeid)
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)'95cddc7f-bc1b-4014-a7b4-585dcd684e01'
+				target.write("Description :"+name+" Template created at "+now+"\n")
+				target.close()
+			elif action == "5":
+				print '		Listing The VMs'
+				listAllVMs()
+			elif action == "6":
+				zoneid = '95cddc7f-bc1b-4014-a7b4-585dcd684e01'
+				networkids = '87e115e8-3849-4961-824c-0c8cb8e86c76'
+				serviceofferingid = '98d17394-e6cf-4f9d-b84f-82b3855ea78b'
+					
+				chosenTemplate = raw_input ("		Available Templates, choose one of them : \n		1- CentOS\n		2- Ubuntu 12.04\n		3- Debian\n >>")
+			
+				if chosenTemplate == "1":
+					templateid='22cff7e4-af82-408f-a400-221b5fb4ae2a'
+				elif chosenTemplate == "2":
+					templateid='26dcfbfe-bad9-4bce-924d-9898bb54a5c8'
+				elif chosenTemplate == "3":
+					templateid='62a3d073-c843-48fb-a06a-94c5ae6c9987'
+			
+				name = raw_input("		give a name for your VM >> ")
+			
+				createVM(serviceofferingid,templateid,zoneid,networkids,name)
+				print '		VM created !!!'
+				target = open(filename, 'a')
+				target.truncate()
+				now = datetime.datetime.now()
+				now=str(now)
+				target.write("Description :"+chosenVM['name']+" created at "+now+"\n")
+				target.close()
+			
+
+	elif IsConnect == "N":
+	    print "		Go ahead !"
+'''

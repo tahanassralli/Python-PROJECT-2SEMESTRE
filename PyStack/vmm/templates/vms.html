@@ -1,0 +1,109 @@
+{% extends "base2.html" %}
+
+{% load staticfiles %}
+{% block content %}
+	{% if role == "admin" %}	    
+	
+	
+	<link rel="stylesheet" href="{% static "assets/base/css/bar.css"%}">
+	<div id='cssmenu'>
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+		<a class="navbar-brand" href="/allVms">welcome {{username}}</a>
+		
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<ul class="nav navbar-nav">
+		    <li><a class="navbar-brand" href="/FormCreateVm">Create New VM</a></li>
+			<a  class="navbar-brand" href="/FormCreateFw">Create firewall rule</a>
+		<a  class="navbar-brand" href="/FormCreatePw">Create portforwarding rule</a>
+		   
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+		        <div class="input-group">
+		          <button class="btn btn:hover" type="submit">Logout</button>
+		        </div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+	</div>
+
+	<div class="container">
+		<div class="row">
+	
+			<div class="col-lg-12">
+				<h1 class="page-header">Virtual Machines</h1>
+			</div>
+			{% if vms.count > 0 %}
+				{% for vm in vms%}
+					{% if vm.image == "assets/images/centos.png" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<h2><a  style ="color: white"href="/vm/{{vm.id}}/">
+							 name:{{vm.name}}</br>
+							 state:{{vm.state}}
+							</a></h2>
+						</div>
+					{% endif %}
+					{% if vm.image == "assets/images/ubuntu.png" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+						<h2><a  style ="color: white" href="/vm/{{vm.id}}/">
+							 name:{{vm.name}}</br>
+							 state:{{vm.state}}
+							</a></h2>
+						</div>
+					{% endif %}
+					{% if vm.image == "assets/images/debian.jpg" %}
+						<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+							<h2><a  style ="color: white" href="/vm/{{vm.id}}/">
+							 name:{{vm.name}}</br>
+							 state:{{vm.state}}
+							</a></h2>
+						</div>
+					{% endif %}
+				{% endfor %}
+			{% else %}
+			<p> No VMs to display </p>
+			{% endif %}
+		</div>
+	
+	{% elif role == "simpleuser" %}
+	
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		<a class="navbar-brand">USER : {{username}}</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<ul class="nav navbar-nav">
+		    <li><a href="/FormCreateVm">Create New Template</a></li>
+		</ul>
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+		        <div class="input-group">
+		          <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+		        </div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+	<div class="container">
+		<div class="row">
+	
+			
+		you have to login <a href="/login">login</a>.<br/>If you are new , then you must create an account from <a href="/createAccount">here</a>
+		
+		{% endif %}
+	</div>
+
+{% endblock %}
+

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+
+<ul>
+	<li><a href="/allVms">List all Servers	</a></li>
+	<li><a href="/createTemplate">Create New Template</a></li>
+</ul>
+
+{% endblock %}
+
+{% block content %}
+
+<h1> Templates </h1>
+{% if templates.count > 0 %}
+	{% for tm in templates%}
+
+	<div>
+		<a href="#">name = {{tm.name}}</a>
+		<hr/>
+	</div>
+
+	{% endfor %}
+{% else %}
+	<p> No Templates to display </p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+	{% if role == "admin" %}	    
+	<nav class="navbar navbar-default" role="navigation">
+	    <div class="navbar-header">
+		<a class="navbar-brand" href="/allVms">ADMIN : {{username}}</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		<ul class="nav navbar-nav">
+		    <li><a href="/FormCreateVm">Create New VM</a></li>
+		    <li class="dropdown">
+		  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Firewall <span class="caret"></span></a>
+		  <ul class="dropdown-menu" role="menu">
+		    <li><a href="#">create Port Firewall Rule</a></li>
+		    <li><a href="#">list All Firewall Rules</a></li>
+		  </ul>
+		</li>
+		    <li><a href="/users">Users</a></li>
+		    <li><a href="/log">Log</a></li>
+		</ul>
+		<div class="col-sm-3 col-md-3 pull-right">
+		    {% load url from future %}
+		    <form action="/logout/" method="POST">
+		    {% csrf_token %}
+		        <div class="input-group">
+		          <button class="btn btn-lg btn-primary btn-block" type="submit">Logout</button>
+		        </div>
+		    </form>
+		</div>        
+	    </div>
+	</nav>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Virtual Machine : {{vm.name}}</h1>
+				</div>
+				<div class="col-lg-4 col-md-5 col-xs-7 thumb" >
+					<p><b>Name : </b><span>{{vm.name}}</span></p>
+					{% if vm.state == "Running" %}
+					<p><b>State : </b><span style="color:green;">Running</span></p>
+					{% elif vm.state == "Stopped" %}
+					<p><b>State : </b><span style="color:red;">Stopped</span></p>
+					{% endif %}
+					<p><b>VM Id : </b><span>{{vm.vmid}}</span></p>
+					<p><b>serviceoffering : </b><span>{{vm.serviceoffering}}</span></p>
+					<p><b>Template Id : </b><span>{{vm.templateid}}</span></p>
+					<p><b>Zone Id : </b><span>{{vm.zoneid}}</span></p>
+					<p><b>Network Id : </b><span>{{vm.networkids}}</span></p>
+					
+				</div>
+				<div class="col-lg-3 col-md-4 col-xs-6 thumb">
+					{% if vm.image == "assets/images/centos.png" %}
+					 <img  class="img-responsive" style="border-radius: 25px;
+    border: 2px solid blue;
+    padding: 20px;
+    width: 200px;
+    height: 200px; "  src="{% static "assets/images/centos.png"%}" alt=""><br/>
+					{% elif vm.image == "assets/images/ubuntu.png" %}
+					<img  class="img-responsive" style="height:200px; width:200px" src="{% static "assets/images/ubuntu.png"%}" alt="">
+					{% elif vm.image == "assets/images/debian.jpg" %}
+					<img class="img-responsive" style="height:200px; width:200px" src="{% static "assets/images/debian.jpg"%}" alt="">
+					{% endif %}
+				</div>
+				<div class="col-lg-3 col-md-4 col-xs-6 thumb" >
+					    <div class="panel panel-primary">
+						<div class="panel-heading">
+						    <h4 class="text-center">VM life cycle</h4>
+						</div>
+						<ul class="list-group list-group-flush">
+						    <li class="list-group-item liitem">
+							<div class="skillLineDefault" style ="text-align: center;">
+							    <a href="/startVm/{{vm.id}}/">Start this machine</a>
+							</div>
+						    </li>
+						    <li class="list-group-item liitem" style ="text-align: center;">
+							<div class="skillLineDefault">
+							    <a href="/restartVM/{{vm.id}}/">Restart this machine</a>
+							</div>
+						    </li>
+						    <li class="list-group-item liitem" style ="text-align: center;">
+							<div class="skillLineDefault">
+							    <a href="/stopVM/{{vm.id}}/">Stop this machine</a>
+							</div>
+						    </li>
+						    <li class="list-group-item liitem" style ="text-align: center;">
+							<div class="skillLineDefault">
+							    <a href="/restoreVM/{{vm.id}}/">Restore this machine</a>
+							</div>
+						    </li>
+						    <li class="list-group-item liitem" style ="text-align: center;">
+							<div class="skillLineDefault">
+							    <a href="/destroyvm/{{vm.id}}/">Destroy this machine</a>
+							</div>
+						    </li>
+						</ul>
+						<div class="panel-footer">
+						    <div class="row">
+							<div class="col-xs-4 col-sm-3 col-md-4 col-lg-2"></div>
+							<div class="col-xs-2 col-sm-4 col-md-4 col-lg-4" id="qr2"></div>
+							<div class="col-xs-6 col-sm-5 col-md-4 col-lg-6"></div>
+						    </div>
+						</div>
+					    </div>
+					
+				</div>
+			</div>
+			<hr>
+		</div>
+	</div>
+	{% else %}
+	{% block sidebar %}{% endblock %}
+	you have to login <a href="/login">login</a>.<br/>If you are new , then you must create an account from <a href="/createAccount">here</a>
+	
+	{% endif %}
+{% endblock %}

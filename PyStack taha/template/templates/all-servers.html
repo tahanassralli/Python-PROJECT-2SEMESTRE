@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block sidebar %}
+
+<ul>
+	<li><a href="/allTemplates">List all Templates</a></li>
+	<li><a href="/createTemplate">Create New Template</a></li>
+</ul>
+
+{% endblock %}
+{% block content %}
+
+<h1> Servers </h1>
+{% if vms.count > 0 %}
+	{% for vm in vms%}
+
+	<div>
+		<a href="/vm/{{vm.id}}/">name = {{vm.name}}</a>
+		<br/> state : {{vm.state}}
+		<hr/>
+	</div>
+
+	{% endfor %}
+{% else %}
+	<p> No VMs to display </p>
+{% endif %}
+
+{% endblock %}
+
